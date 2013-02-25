@@ -1,0 +1,22 @@
+.brand span {
+  font-size: 12px;
+  font-style: italic;
+}
+#sortable {
+  margin: 0;
+}
+#sortable .alert {
+  margin-bottom: 5px;
+  color: #333333;
+  background-color: #f7f7f7;
+  border-color: #f2f2f2;
+}
+ul .task {
+  list-style: none;
+}
+.checkbox {
+  margin-bottom: 0;
+}
+.checkbox span {
+  float: right;
+}
