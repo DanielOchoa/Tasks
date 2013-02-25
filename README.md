@@ -30,7 +30,15 @@ Setting up:
 - Set your DB config under 'inc/connection.inc.php'
 - Make sure magic_quotes are disabled.
 - Create the following tables: <br>
-CREATE TABLE users ( user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL);
-CREATE TABLE tasks ( task_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, task VARCHAR(255) NOT NULL, enabled TINYINT(11) NOT NULL DEFAULT 1, order INT NOT NULL);
+CREATE TABLE users ( <br>
+       user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, <br>
+       username VARCHAR(255) NOT NULL, <br>
+       password VARCHAR(255) NOT NULL<br>
+);<br>
+CREATE TABLE tasks ( <br>
+       task_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, <br>
+       user_id INT NOT NULL, task VARCHAR(255) NOT NULL, <br>
+       enabled TINYINT(11) NOT NULL DEFAULT 1, order INT NOT NULL<br>
+);
 
 Enjoy!
