@@ -12,25 +12,11 @@ include_once('inc/connection.inc.php');
 include_once('inc/tasks.inc.php');
 
 // call our tasks object, output a list of tasks with ->listDisplay();, see tasks.inc.php for list of functions
-// $_SESSION['user_id'] was queried from the db on login.php, to know which tasks to display
+// $_SESSION['user_id'] was queried from the db on login.php, used mainly to prevent cross-site forgeries
 $tasks = new Tsks($_SESSION['user_id']);
 
-// if we delete a task..
-if (isset($_POST['taskdel']) && is_numeric($_POST['taskdel'])) {
-  $tasks->removeTask($_POST['taskdel']);
-}
-// if we order a task...
-if (isset($_POST['order']) && is_array($_POST['order'])) {
-  $tasks->saveNewOrder();
-}
-// if we enable/disable a task
-if (isset($_POST['enabled']) && isset($_POST['task'])) {
-  $tasks->saveEnabled();
-}
-// add tasks...
-if (isset($_POST['submit']) && isset($_POST['newtask'])) {
-  $tasks->addTask();
-}
+// this will handle all of the POSTs made with jquery $.post...
+$tasks->postHandler();
 ?>
 
 <!DOCTYPE html>
@@ -89,17 +75,19 @@ if (isset($_POST['submit']) && isset($_POST['newtask'])) {
           <?php
           $errors = $tasks->errors();
           if ($errors) {
+            echo '<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>';
             echo '<ul>';
             foreach ($errors as $error) {
               echo '<li>' . $error . '</li>';
             }
             echo '</ul>';
+            echo '</div>';
           }
           ?>
         </div>
         <div class="insert">
           <div class="input-append">
-            <form method="post">
+            <form method="post" id="addTask">
               <input class="span7" type="text" name="newtask" placeholder="New Task!" id="appendedInputButton">
               <button type="submit" name="submit" class="btn">&nbsp;&nbsp;Task!&nbsp;&nbsp;&nbsp;</button>
             </form>

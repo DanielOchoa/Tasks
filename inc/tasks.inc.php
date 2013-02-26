@@ -14,6 +14,38 @@ class Tsks {
     $this->makeQuery();
   }
 
+  public function postHandler() {
+    // these posts are defined in the main.js file.
+    // if we delete a task..
+    if (isset($_POST['taskdel']) && is_numeric($_POST['taskdel'])) {
+      $this->removeTask($_POST['taskdel']);
+      // add error reporting here later
+      exit;
+    }
+    // if we order a task...
+    if (isset($_POST['order']) && is_array($_POST['order'])) {
+      $this->saveNewOrder();
+      // add error reporting here
+      exit;
+    }
+    // if we enable/disable a task
+    if (isset($_POST['enabled']) && isset($_POST['task'])) {
+      $this->saveEnabled();
+      // add error reportin here...
+      exit;
+    }
+    // add tasks...
+    if (isset($_POST['newtask'])) {
+      if (empty($_POST['newtask'])) {
+        $this->warningBox("You must enter a valid task.");
+        exit;
+      }
+      $this->addTask();
+      $this->listDisplay();
+      exit;
+    }
+  }
+
   public function returnResults() {
     return $this->_queryResults;
   }
@@ -50,9 +82,7 @@ class Tsks {
     }
   }
 
-  public function removeTask($task_id) {
-    // make the query again, in case we added items with the addTask()
-    $this->makeQuery();
+  private function removeTask($task_id) {
     foreach ($this->_queryResults as $item) {
       if ($item['task_id'] == (int) $_POST['taskdel']) {
         $this->_deleteQuery = 'DELETE FROM `tasks` WHERE `task_id` = :task_id AND `user_id` = :userid';
@@ -65,7 +95,7 @@ class Tsks {
   }
 
   // save the order when using jqueryUI ordering
-  public function saveNewOrder() {
+  private function saveNewOrder() {
     $newQuery = 'UPDATE `tasks` SET `order` = :newOrder WHERE `task_id` = :thistaskID AND `user_id` = :userid';
     $newOrder = $_POST['order'];
     $result = $this->_conn->prepare($newQuery) or die('Query Error');
@@ -75,7 +105,7 @@ class Tsks {
     // add error return?
   }
 
-  public function saveEnabled() {
+  private function saveEnabled() {
     $newQuery = 'UPDATE `tasks` SET `enabled` = :enabled WHERE `task_id` = :thistaskID AND `user_id` = :userid';
     $result = $this->_conn->prepare($newQuery) or die('Query Error');
     if (!$result->execute(array(':enabled' => (int) $_POST['enabled'], ':thistaskID' => (int) $_POST['task'], ':userid' => (int) $this->_userId))) {
@@ -83,7 +113,7 @@ class Tsks {
     }
   }
 
-  public function addTask() {
+  private function addTask() {
     $addQuery = "INSERT INTO `tasks` (`task_id`, `user_id`, `task`, `enabled`, `order`) VALUES (NULL, :user_id, :task, '1', :order)";
     // make the query again, in case we removed items
     $this->makeQuery();
@@ -113,6 +143,25 @@ class Tsks {
     if (!empty($result)) {
       // set results to queryResults
       $this->_queryResults = $result;
+    }
+  }
+
+  // html struct to display the warning box...
+  private function warningBox($error) {
+    if ($error) {
+      echo '<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>';
+      if (is_array($error)) {
+        echo '<ul>';
+        foreach ($error as $eachError) {
+          echo '<li>' . $eachError . '</li>';
+        }
+        echo '</ul>';
+      } else {
+        echo $error;
+      }
+      echo '</div>';
+    } else {
+      return false;
     }
   }
 }

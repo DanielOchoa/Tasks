@@ -6,7 +6,7 @@ var Tasks = {
       if ($(this).is(':checked')) {
         $(this).parent().css('text-decoration', 'line-through');
         var liId = $(this).closest('li').attr('id');
-        $.post('tasks.php', {enabled : '0', task : liId});
+        $.post('tasks.php', {enabled : '0', task : liId, messages : 1});
       }
     });
   },
@@ -30,39 +30,57 @@ var Tasks = {
   removeTask : function() {
     $('#sortable .close').click(function() {
       var taskId = $(this).closest('li').attr('id');
-      console.log(taskId);
       $.post('tasks.php', {taskdel : taskId})
       // no tasks remaining? add message of empty task list - ajax means default message won't show..
-      /*.done(function(data) {
+      .done(function(data) {
         if ($('.task .alert').length === 0) {
-          $('#task-results').append('<p>Your list is empty.</p>');
-          alert('hi');
+          $('#messages').append('<p>Your list is empty.</p>');
         }
-      })*/;
+      });
     });
   },
-  // run our tasks in the required order
+  ajaxAddTask : function() {
+    $('#addTask').submit(function() {
+      var thisTask = $('#addTask input').val();
+      $.post('tasks.php', {newtask : thisTask})
+      .done(function(data) {
+        if (thisTask.length !== 0) {
+          $('#messages').empty();
+          $('#addTask input').val('');
+          $('#task-results').empty().append(data);
+        } else {
+          $('#messages').append(data);
+        }
+      });
+      // prevent form submission...
+      return false;
+    });
+  },
+  // jQuery UI
+  sortableUI : function() {
+    $('#sortable').sortable({
+      // DOM is re-ordered and then this callback happens, we save the new order to the DB
+      update : function(event, ui) {
+        var sortedIds = $(this).sortable('toArray');
+        $.post('tasks.php', {'order[]' : sortedIds});
+      }
+    });
+  },
+  // run our tasks in the required order. ajaxAddTask() is run outside since it's it works outside the list. the list get ajaxed so running it here would cause duplicate entries.
+  // whats to prevent someone from running Tasks.ajaxAddTask() 100 times in the console and flooding the DB? nothing. Go ahead.
   run : function() {
     this.checkedOnLoad();
     this.strikeThrough();
     this.unstrikeThrough();
     this.removeTask();
+    this.sortableUI();
   }
 };
 
 // run our literal object
 Tasks.run();
-
-/**************
-//
-// Jquery UI //
-//
- *************/
-$('#sortable').sortable({
-  // DOM is re-ordered and then this callback happens, we save the new order to the DB
-  update : function(event, ui) {
-    var sortedIds = $(this).sortable('toArray');
-    $.post('tasks.php', {'order[]' : sortedIds});
-  }
+Tasks.ajaxAddTask();
+// somewhat dirty.. running tasks.run() again when ajax is completed under ajaxAddTask().. hence why I run it separately otherwise I get multiple entries when ajaxing
+$(document).ajaxComplete(function(){
+    Tasks.run();
 });
-//$('#sortable').disableSelection(); // dunno why this one yet
