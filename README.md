@@ -6,7 +6,7 @@ Tasks! is a simple browser based LAMP application to help you keep track of your
 
 It consists of a login screen - once logged in you have a minimalist input to start entering your tasks. Once you enter a couple of them, you can check them off with a strike through to mark them as complete, and you can also switch their order in the list with a simple drag & drop. It uses ajax to save all of the changes to the database, so every item you strike through, every item you re-order or every item you delete gets saved immediately. 
 
-Try the demo at http://danielochoa.info/tasks/tasks.php
+Try the demo at http://dani3l.com/tasks/tasks.php
 ============================================
 Tasks! is currently under development and there is still many features that need to be implemented. Tasks! is built on top of Twitter Bootstrap and uses jQuery UI and jQuery which are included on the project. I would like to give credit to Mark Otto (@mdo) and Jacob Thornton (@fat) for releasing such a great tool to make development go faster.
 
